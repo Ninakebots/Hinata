@@ -1,11 +1,11 @@
 [
     {
         "session": "orihime",
-        "token": "8290641595:AAHPCSwVXd5wjRJhDhc42vnS8_uuZu2UQMtg",
+        "token": "8272766113:AAGGo1OraNNJMk4cPGv7Y1YdwxImAYHi-Ww",
         "api_id": "11619403",
         "api_hash": "b9529ed85c826521157c522f96350c8b",
         "workers": 8,
-        "db_uri": "mongodb+srv://veleco9510_db_user:rLGP4hc0USCbVK07@cluster0.mdvh1qh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+        "db_uri": "mongodb+srv://Mikasa:bot@cluster0.act9lxi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
         "db_name": "Orihime",
         "fsubs": [],
         "db": -1003046481371,
@@ -26,6 +26,7 @@
         "protect": false
     }
 ]
+
 
 
 
