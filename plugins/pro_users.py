@@ -17,12 +17,12 @@ class PaidUserManager:
     def __init__(self, client: Bot):
         self.client = client
         self.payment_plans = {
-            '1d': {'duration': timedelta(days=1), 'price': '₹50', 'name': '1 𝖣𝖺𝗒'},
-            '7d': {'duration': timedelta(days=7), 'price': '₹250', 'name': '1 𝖶𝖾𝖾𝗄'},
-            '1m': {'duration': timedelta(days=30), 'price': '₹800', 'name': '1 𝖬𝗈𝗇𝗍𝗁'},
-            '3m': {'duration': timedelta(days=90), 'price': '₹2000', 'name': '3 𝖬𝗈𝗇𝗍𝗁𝗌'},
-            '1y': {'duration': timedelta(days=365), 'price': '₹5000', 'name': '1 𝖸𝖾𝖺𝗋'},
-            'perm': {'duration': None, 'price': '₹15000', 'name': '𝖯𝖾𝗋𝗆𝖺𝗇𝖾𝗇𝗍'}
+            '1d': {'duration': timedelta(days=1), 'price': '₹5', 'name': '1 𝖣𝖺𝗒'},
+            '7d': {'duration': timedelta(days=7), 'price': '₹25', 'name': '1 𝖶𝖾𝖾𝗄'},
+            '1m': {'duration': timedelta(days=30), 'price': '₹80', 'name': '1 𝖬𝗈𝗇𝗍𝗁'},
+            '3m': {'duration': timedelta(days=90), 'price': '₹200', 'name': '3 𝖬𝗈𝗇𝗍𝗁𝗌'},
+            '1y': {'duration': timedelta(days=365), 'price': '₹1500', 'name': '1 𝖸𝖾𝖺𝗋'},
+            'perm': {'duration': None, 'price': '₹2000', 'name': '𝖯𝖾𝗋𝗆𝖺𝗇𝖾𝗇𝗍'}
         }
     
     def parse_custom_duration(self, amount: int, unit: str) -> timedelta:
@@ -91,10 +91,9 @@ class PaidUserManager:
 🎉 **𝖶𝖾𝗅𝖼𝗈𝗆𝖾 𝗍𝗈 𝖯𝗋𝖾𝗆𝗂𝗎𝗆!** 𝖸𝗈𝗎 𝗇𝗈𝗐 𝗁𝖺𝗏𝖾 𝖺𝖼𝖼𝖾𝗌𝗌 𝗍𝗈 𝖺𝗅𝗅 𝖾𝗑𝖼𝗅𝗎𝗌𝗂𝗏𝖾 𝖿𝖾𝖺𝗍𝗎𝗋𝖾𝗌."""
 
         keyboard = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🌟 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖥𝖾𝖺𝗍𝗎𝗋𝖾𝗌", callback_data="premium_features")],
-            [InlineKeyboardButton("📋 𝖬𝗒 𝖲𝗎𝖻𝗌𝖼𝗋𝗂𝗉𝗍𝗂𝗈𝗇", callback_data="my_subscription")],
-            [InlineKeyboardButton("🆘 𝖲𝗎𝗉𝗉𝗈𝗋𝗍", url="https://t.me/your_support")]
-        ])
+    [InlineKeyboardButton("𝖳𝖾𝖺𝗆 𝖶𝗂𝗇𝖾", url="https://t.me/Team_Wine")],
+    [InlineKeyboardButton("𝖲𝗎𝗉𝗉𝗈𝗋𝗍", url="https://t.me/Hall_of_Soul_Chat")]
+])
         
         try:
             await self.client.send_message(
@@ -166,12 +165,12 @@ async def add_paid_user_command(client: Bot, message: Message):
 `/addpaid @𝗎𝗌𝖾𝗋𝗇𝖺𝗆𝖾 1𝗆`
 
 **𝖯𝗅𝖺𝗇 𝖢𝗈𝖽𝖾𝗌:**
-- `1𝖽` - 1 𝖣𝖺𝗒 (₹50)
-- `7𝖽` - 1 𝖶𝖾𝖾𝗄 (₹250) 
-- `1𝗆` - 1 𝖬𝗈𝗇𝗍𝗁 (₹800)
-- `3𝗆` - 3 𝖬𝗈𝗇𝗍𝗁𝗌 (₹2000)
-- `1𝗒` - 1 𝖸𝖾𝖺𝗋 (₹5000)
-- `𝗉𝖾𝗋𝗆` - 𝖯𝖾𝗋𝗆𝖺𝗇𝖾𝗇𝗍 (₹15000)
+- `1𝖽` - 1 𝖣𝖺𝗒 (₹5)
+- `7𝖽` - 1 𝖶𝖾𝖾𝗄 (₹25) 
+- `1𝗆` - 1 𝖬𝗈𝗇𝗍𝗁 (₹80)
+- `3𝗆` - 3 𝖬𝗈𝗇𝗍𝗁𝗌 (₹200)
+- `1𝗒` - 1 𝖸𝖾𝖺𝗋 (₹1500)
+- `𝗉𝖾𝗋𝗆` - 𝖯𝖾𝗋𝗆𝖺𝗇𝖾𝗇𝗍 (₹2000)
 
 **𝖢𝗎𝗌𝗍𝗈𝗆 𝖳𝗂𝗆𝖾 𝖴𝗇𝗂𝗍𝗌:**
 𝗌=𝗌𝖾𝖼𝗈𝗇𝖽𝗌, 𝗆=𝗆𝗂𝗇𝗎𝗍𝖾𝗌, 𝗁=𝗁𝗈𝗎𝗋𝗌, 𝖽=𝖽𝖺𝗒𝗌, 𝗐=𝗐𝖾𝖾𝗄𝗌, 𝗒=𝗒𝖾𝖺𝗋𝗌
@@ -489,3 +488,4 @@ async def handle_plan_selection(client: Bot, callback_query):
 @Client.on_callback_query(filters.regex(r"^cancel_operation$"))
 async def handle_cancel_operation(client: Bot, callback_query):
     await callback_query.message.delete()
+
