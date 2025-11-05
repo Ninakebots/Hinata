@@ -1,7 +1,60 @@
 from pyrogram import Client, filters
-from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.errors.pyromod import ListenerTimeout
 import re
+
+async def save_media_to_telegram(client: Client, message: Message, media_key: str):
+    """𝖲𝖺𝗏𝖾 𝗆𝖾𝖽𝗂𝖺 𝖿𝗂𝗅𝖾_𝗂𝖽 𝖺𝗇𝖽 𝖺𝖼𝖼𝖾𝗌𝗌_𝗁𝖺𝗌𝗁 𝗍𝗈 𝖣𝖡"""
+    try:
+        if message.photo:
+            # 𝖦𝖾𝗍 𝗍𝗁𝖾 𝗅𝖺𝗋𝗀𝖾𝗌𝗍 𝗉𝗁𝗈𝗍𝗈
+            photo = message.photo[-1]
+            media_data = {
+                'file_id': photo.file_id,
+                'access_hash': photo.file_unique_id,
+                'type': 'photo'
+            }
+        elif message.video:
+            video = message.video
+            media_data = {
+                'file_id': video.file_id,
+                'access_hash': video.file_unique_id,
+                'type': 'video'
+            }
+        else:
+            return False
+        
+        # 𝖲𝖺𝗏𝖾 𝗍𝗈 𝖣𝖺𝗍𝖺𝖻𝖺𝗌𝖾
+        client.messages[media_key] = media_data
+        await client.mongodb.save_settings(client.session_name, client.get_current_settings())
+        return True
+        
+    except Exception as e:
+        print(f"Error saving media: {e}")
+        return False
+
+def get_media_display(client, key):
+    """𝖦𝖾𝗍 𝗆𝖾𝖽𝗂𝖺 𝖽𝗂𝗌𝗉𝗅𝖺𝗒 𝗂𝗇𝖿𝗈"""
+    media_data = client.messages.get(key)
+    if not media_data:
+        return "┃    <i>🚫 𝖭𝗈𝗍 𝖢𝗈𝗇𝖿𝗂𝗀𝗎𝗋𝖾𝖽</i>"
+    
+    if isinstance(media_data, dict) and 'file_id' in media_data:
+        media_type = media_data.get('type', 'photo')
+        if media_type == 'photo':
+            return "┃    🖼️ 𝖣𝗂𝗋𝖾𝖼𝗍 𝖯𝗁𝗈𝗍𝗈"
+        elif media_type == 'video':
+            return "┃    📹 𝖣𝗂𝗋𝖾𝖼𝗍 𝖵𝗂𝖽𝖾𝗈"
+    else:
+        # 𝖴𝖱𝖫 𝖼𝖺𝗌𝖾
+        url = media_data
+        if len(url) > 30:
+            display_url = url[:27] + "..."
+        else:
+            display_url = url
+            
+        media_type = detect_media_type(url)
+        return f"┃    {media_type}\n┃    <code>{display_url}</code>"
 
 def is_valid_media_url(url):
     """𝖢𝗁𝖾𝖼𝗄 𝗂𝖿 𝖴𝖱𝖫 𝗂𝗌 𝖺 𝗏𝖺𝗅𝗂𝖽 𝗆𝖾𝖽𝗂𝖺 𝖴𝖱𝖫"""
@@ -60,38 +113,24 @@ def detect_media_type(url):
 async def photos_panel(client: Client, query: CallbackQuery):
     await query.answer()
     
-    def get_photo(key):
-        photo_url = client.messages.get(key)
-        if not photo_url:
-            return "┃    <i>🚫 𝖭𝗈𝗍 𝖢𝗈𝗇𝖿𝗂𝗀𝗎𝗋𝖾𝖽</i>"
-        
-        # 𝖳𝗋𝗎𝗇𝖼𝖺𝗍𝖾 𝗅𝗈𝗇𝗀 𝖴𝖱𝖫𝗌 𝖿𝗈𝗋 𝖽𝗂𝗌𝗉𝗅𝖺𝗒
-        if len(photo_url) > 30:
-            display_url = photo_url[:27] + "..."
-        else:
-            display_url = photo_url
-            
-        media_type = detect_media_type(photo_url)
-        return f"┃    {media_type}\n┃    <code>{display_url}</code>"
-
     # ─── 𝖧𝖨𝖭𝖠𝖳𝖠 𝖬𝖤𝖣𝖨𝖠 𝖯𝖠𝖭𝖤𝖫 ─────────────────────────────────────────
     msg = f"""
 ╭───「 🌸 **𝖧𝖨𝖭𝖠𝖳𝖠 𝖬𝖤𝖣𝖨𝖠 𝖬𝖠𝖭𝖠𝖦𝖤𝖬𝖤𝖭𝖳** 」
 │
 ├─ 🎴 **𝖲𝖳𝖠𝖱𝖳 𝖬𝖤𝖣𝖨𝖠**
-{get_photo('START_PHOTO')}
+{get_media_display(client, 'START_PHOTO')}
 │
 ├─ 📢 **𝖥𝖮𝖱𝖢𝖤 𝖲𝖴𝖡𝖲𝖢𝖱𝖨𝖡𝖤**  
-{get_photo('FSUB_PHOTO')}
+{get_media_display(client, 'FSUB_PHOTO')}
 │
 ├─ ⏳ **𝖵𝖤𝖱𝖨𝖥𝖨𝖢𝖠𝖳𝖨𝖮𝖭 𝖬𝖤𝖣𝖨𝖠**
-{get_photo('VERIFY_PHOTO')}
+{get_media_display(client, 'VERIFY_PHOTO')}
 │
 ╰───「 🔮 *𝖧𝗂𝗇𝖺𝗍𝖺 𝗏𝟤.𝟢* 」───────
 
-✨ **𝖲𝗎𝗉𝗉𝗈𝗋𝗍𝖾𝖽 𝖥𝗈𝗋𝗆𝖺𝗍𝗌:** 𝖨𝗆𝖺𝗀𝖾𝗌 • 𝖵𝗂𝖽𝖾𝗈𝗌 • 𝖦𝖨𝖥𝗌
-🌐 **𝖲𝗈𝗎𝗋𝖼𝖾𝗌:** 𝖦𝗂𝗍𝖧𝗎𝖻, 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁, 𝖨𝗆𝗀𝗎𝗋, 𝖢𝖣𝖭, 𝖣𝗂𝗋𝖾𝖼𝗍 𝖫𝗂𝗇𝗄𝗌
-⚡ **𝖲𝗆𝖺𝗋𝗍 𝖣𝖾𝗍𝖾𝖼𝗍𝗂𝗈𝗇:** 𝖠𝗎𝗍𝗈-𝖽𝖾𝗍𝖾𝖼𝗍𝗌 𝗆𝖾𝖽𝗂𝖺 𝗍𝗒𝗉𝖾"""
+✨ **𝖣𝗂𝗋𝖾𝖼𝗍 𝖴𝗉𝗅𝗈𝖺𝖽:** 𝖯𝗁𝗈𝗍𝗈𝗌 & 𝖵𝗂𝖽𝖾𝗈𝗌
+🌐 **𝖴𝖱𝖫 𝖲𝗎𝗉𝗉𝗈𝗋𝗍:** 𝖦𝗂𝗍𝖧𝗎𝖻, 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁, 𝖨𝗆𝗀𝗎𝗋, 𝖢𝖣𝖭
+⚡ **𝖥𝗎𝗅𝗅 𝖥𝗅𝖾𝗑𝗂𝖻𝗂𝗅𝗂𝗍𝗒:** 𝖢𝗁𝗈𝗈𝗌𝖾 𝗒𝗈𝗎𝗋 𝗉𝗋𝖾𝖿𝖾𝗋𝗋𝖾𝖽 𝗆𝖾𝗍𝗁𝗈𝖽"""
     
     reply_markup = InlineKeyboardMarkup([
         [
@@ -125,7 +164,16 @@ async def set_photo(client: Client, query: CallbackQuery):
     try:
         ask_msg = await client.ask(
             chat_id=query.from_user.id,
-            text=f"**📤 𝖲𝖾𝗇𝖽 𝗇𝖾𝗐 𝗆𝖾𝖽𝗂𝖺 𝖴𝖱𝖫 𝖿𝗈𝗋 {key_name_map.get(photo_key, photo_key)}**\n\n✨ **𝖲𝗎𝗉𝗉𝗈𝗋𝗍𝖾𝖽 𝖥𝗈𝗋𝗆𝖺𝗍𝗌:**\n• 𝖨𝗆𝖺𝗀𝖾𝗌: `𝗃𝗉𝗀, 𝗉𝗇𝗀, 𝗀𝗂𝖿, 𝗐𝖾𝖻𝗉`\n• 𝖵𝗂𝖽𝖾𝗈𝗌: `𝗆𝗉𝟦, 𝗀𝗂𝖿, 𝗐𝖾𝖻𝗆`\n\n🌐 **𝖲𝗎𝗉𝗉𝗈𝗋𝗍𝖾𝖽 𝖲𝗈𝗎𝗋𝖼𝖾𝗌:**\n• 𝖦𝗂𝗍𝖧𝗎𝖻, 𝖦𝗂𝗍𝖫𝖺𝖻, 𝖨𝗆𝗀𝗎𝗋, 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁\n• 𝖢𝖣𝖭 𝗅𝗂𝗇𝗄𝗌, 𝖣𝗂𝗋𝖾𝖼𝗍 𝗂𝗆𝖺𝗀𝖾 𝖴𝖱𝖫𝗌\n• 𝖢𝗅𝗈𝗎𝖽 𝗌𝗍𝗈𝗋𝖺𝗀𝖾 𝗅𝗂𝗇𝗄𝗌\n\n𝖳𝗒𝗉𝖾 `𝗋𝖾𝗆𝗈𝗏𝖾` 𝗍𝗈 𝖼𝗅𝖾𝖺𝗋 𝗈𝗋 `𝖼𝖺𝗇𝖼𝖾𝗅` 𝗍𝗈 𝗀𝗈 𝖻𝖺𝖼𝗄.",
+            text=f"""**📤 𝖲𝖾𝗇𝖽 𝗇𝖾𝗐 𝗆𝖾𝖽𝗂𝖺 𝖿𝗈𝗋 {key_name_map.get(photo_key, photo_key)}**
+
+✨ **𝖣𝗂𝗋𝖾𝖼𝗍 𝖴𝗉𝗅𝗈𝖺𝖽:**
+• 𝖲𝖾𝗇𝖽 𝖺 𝗉𝗁𝗈𝗍𝗈 𝗈𝗋 𝗏𝗂𝖽𝖾𝗈 𝖽𝗂𝗋𝖾𝖼𝗍𝗅𝗒
+
+🌐 **𝖴𝖱𝖫 𝖲𝗎𝗉𝗉𝗈𝗋𝗍:**
+• 𝖦𝗂𝗍𝖧𝗎𝖻, 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁, 𝖨𝗆𝗀𝗎𝗋, 𝖢𝖣𝖭
+• 𝖣𝗂𝗋𝖾𝖼𝗍 𝗂𝗆𝖺𝗀𝖾/𝗏𝗂𝖽𝖾𝗈 𝗅𝗂𝗇𝗄𝗌
+
+𝖳𝗒𝗉𝖾 `𝗋𝖾𝗆𝗈𝗏𝖾` 𝗍𝗈 𝖼𝗅𝖾𝖺𝗋 𝗈𝗋 `𝖼𝖺𝗇𝖼𝖾𝗅` 𝗍𝗈 𝗀𝗈 𝖻𝖺𝖼𝗄.""",
             filters=filters.photo | filters.video | filters.text,
             timeout=60
         )
@@ -148,10 +196,15 @@ async def set_photo(client: Client, query: CallbackQuery):
                     media_type = detect_media_type(url)
                     await ask_msg.reply(f"✅ **{media_type}** 𝖿𝗈𝗋 `{key_name_map.get(photo_key, photo_key)}` 𝗎𝗉𝖽𝖺𝗍𝖾𝖽 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎𝗅𝗅𝗒!")
                 else:
-                    await ask_msg.reply("❌ **𝖨𝗇𝗏𝖺𝗅𝗂𝖽 𝖴𝖱𝖫.** 𝖯𝗅𝖾𝖺𝗌𝖾 𝗉𝗋𝗈𝗏𝗂𝖽𝖾 𝖺 𝗏𝖺𝗅𝗂𝖽 𝖽𝗂𝗋𝖾𝖼𝗍 𝗂𝗆𝖺𝗀𝖾/𝗏𝗂𝖽𝖾𝗈 𝖴𝖱𝖫.\n\n**𝖤𝗑𝖺𝗆𝗉𝗅𝖾𝗌:**\n• `https://github.com/user/repo/image.png`\n• `https://telegra.ph/file/example.jpg`\n• `https://i.imgur.com/example.png`")
+                    await ask_msg.reply("❌ **𝖨𝗇𝗏𝖺𝗅𝗂𝖽 𝖴𝖱𝖫.** 𝖯𝗅𝖾𝖺𝗌𝖾 𝗉𝗋𝗈𝗏𝗂𝖽𝖾 𝖺 𝗏𝖺𝗅𝗂𝖽 𝖽𝗂𝗋𝖾𝖼𝗍 𝗂𝗆𝖺𝗀𝖾/𝗏𝗂𝖽𝖾𝗈 𝖴𝖱𝖫 𝗈𝗋 𝗌𝖾𝗇𝖽 𝖺 𝗉𝗁𝗈𝗍𝗈/𝗏𝗂𝖽𝖾𝗈 𝖽𝗂𝗋𝖾𝖼𝗍𝗅𝗒.")
         
         elif ask_msg.photo or ask_msg.video:
-            await ask_msg.reply("❌ **𝖣𝗂𝗋𝖾𝖼𝗍 𝗆𝖾𝖽𝗂𝖺 𝗎𝗉𝗅𝗈𝖺𝖽𝗌 𝖺𝗋𝖾 𝗇𝗈𝗍 𝖺𝗅𝗅𝗈𝗐𝖾𝖽.** 𝖯𝗅𝖾𝖺𝗌𝖾 𝗎𝗉𝗅𝗈𝖺𝖽 𝗒𝗈𝗎𝗋 𝗆𝖾𝖽𝗂𝖺 𝗍𝗈 𝖦𝗂𝗍𝖧𝗎𝖻, 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁, 𝗈𝗋 𝖨𝗆𝗀𝗎𝗋 𝖺𝗇𝖽 𝗌𝖾𝗇𝖽 𝗆𝖾 𝗍𝗁𝖾 𝗋𝖾𝗌𝗎𝗅𝗍𝗂𝗇𝗀 𝗅𝗂𝗇𝗄.", disable_web_page_preview=True)
+            success = await save_media_to_telegram(client, ask_msg, photo_key)
+            if success:
+                media_type = "🖼️ 𝖯𝗁𝗈𝗍𝗈" if ask_msg.photo else "📹 𝖵𝗂𝖽𝖾𝗈"
+                await ask_msg.reply(f"✅ **{media_type}** 𝖿𝗈𝗋 `{key_name_map.get(photo_key, photo_key)}` 𝗎𝗉𝗅𝗈𝖺𝖽𝖾𝖽 𝖺𝗇𝖽 𝗌𝖺𝗏𝖾𝖽 𝗌𝗎𝖼𝖼𝖾𝗌𝗌𝖿𝗎𝗅𝗅𝗒!")
+            else:
+                await ask_msg.reply("❌ **𝖤𝗋𝗋𝗈𝗋 𝗌𝖺𝗏𝗂𝗇𝗀 𝗆𝖾𝖽𝗂𝖺.** 𝖯𝗅𝖾𝖺𝗌𝖾 𝗍𝗋𝗒 𝖺𝗀𝖺𝗂𝗇.")
 
     except ListenerTimeout:
         await query.message.reply("⏰ 𝖳𝗂𝗆𝖾𝗈𝗎𝗍. 𝖮𝗉𝖾𝗋𝖺𝗍𝗂𝗈𝗇 𝖼𝖺𝗇𝖼𝖾𝗅𝗅𝖾𝖽.")
@@ -167,22 +220,19 @@ async def media_info(client: Client, query: CallbackQuery):
     msg = """
 ╭───「 📚 𝖬𝖤𝖣𝖨𝖠 𝖨𝖭𝖥𝖮𝖱𝖬𝖠𝖳𝖨𝖮𝖭 」───
 │
-├─ 🌸 **𝖧𝗈𝗐 𝗍𝗈 𝗀𝖾𝗍 𝖦𝗂𝗍𝖧𝗎𝖻 𝖬𝖾𝖽𝗂𝖺 𝖴𝖱𝖫:**
-│  𝟣. 𝖦𝗈 𝗍𝗈 𝖦𝗂𝗍𝖧𝗎𝖻.𝖼𝗈𝗆
-│  𝟤. 𝖴𝗉𝗅𝗈𝖺𝖽 𝗂𝗆𝖺𝗀𝖾/𝗏𝗂𝖽𝖾𝗈 𝗍𝗈 𝗋𝖾𝗉𝗈
-│  𝟥. 𝖢𝗅𝗂𝖼𝗄 𝗈𝗇 𝗍𝗁𝖾 𝖿𝗂𝗅𝖾
-│  𝟦. 𝖢𝗈𝗉𝗒 "𝖱𝖺𝗐" 𝖴𝖱𝖫
-│  𝟧. 𝖯𝖺𝗌𝗍𝖾 𝗁𝖾𝗋𝖾
+├─ 🎯 **𝖣𝗂𝗋𝖾𝖼𝗍 𝖴𝗉𝗅𝗈𝖺𝖽:**
+│  • 𝖲𝗂𝗆𝗉𝗅𝗒 𝗌𝖾𝗇𝖽 𝗉𝗁𝗈𝗍𝗈/𝗏𝗂𝖽𝖾𝗈
+│  • 𝖠𝗎𝗍𝗈-𝗌𝖺𝗏𝖾𝗌 𝗍𝗈 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗆
+│  • 𝖥𝖺𝗌𝗍 𝖺𝗇𝖽 𝖾𝖺𝗌𝗒
 │
-├─ 📄 **𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁:**
-│  • 𝖦𝗈 𝗍𝗈: 𝖳𝖾𝗅𝖾𝗀𝗋𝖺.𝗉𝗁
-│  • 𝖴𝗉𝗅𝗈𝖺𝖽 𝗆𝖾𝖽𝗂𝖺
-│  • 𝖢𝗈𝗉𝗒 𝗅𝗂𝗇𝗄
+├─ 🌸 **𝖴𝖱𝖫 𝖲𝗎𝗉𝗉𝗈𝗋𝗍:**
+│  • 𝖦𝗂𝗍𝖧𝗎𝖻, 𝖦𝗂𝗍𝖫𝖺𝖻, 𝖨𝗆𝗀𝗎𝗋
+│  • 𝖳𝖾𝗅𝖾𝗀𝗋𝖺𝗉𝗁, 𝖦𝗋𝖺𝗉𝗁.𝗈𝗋𝗀
+│  • 𝖢𝖣𝖭 𝗅𝗂𝗇𝗄𝗌, 𝖣𝗂𝗋𝖾𝖼𝗍 𝗎𝗋𝗅𝗌
 │
-├─ 🌐 **𝖨𝗆𝗀𝗎𝗋:**
-│  • 𝖦𝗈 𝗍𝗈: 𝖨𝗆𝗀𝗎𝗋.𝖼𝗈𝗆
-│  • 𝖴𝗉𝗅𝗈𝖺𝖽 𝗂𝗆𝖺𝗀𝖾
-│  • 𝖢𝗈𝗉𝗒 𝖽𝗂𝗋𝖾𝖼𝗍 𝗅𝗂𝗇𝗄
+├─ 📹 **𝖲𝗎𝗉𝗉𝗈𝗋𝗍𝖾𝖽 𝖥𝗈𝗋𝗆𝖺𝗍𝗌:**
+│  • 𝖯𝗁𝗈𝗍𝗈𝗌: JPG, PNG, GIF, WEBP
+│  • 𝖵𝗂𝖽𝖾𝗈𝗌: MP4, MOV, AVI, WEBM
 │
 ╰───「 🔮 *𝖧𝗂𝗇𝖺𝗍𝖺* 」─────────"""
     
