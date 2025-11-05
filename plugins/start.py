@@ -10,6 +10,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from plugins.shortner import get_short
 import config
+from datetime import timezone
 
 IST = ZoneInfo("Asia/Kolkata")
 CACHE_TTL_SECONDS = 300
