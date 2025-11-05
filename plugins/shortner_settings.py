@@ -20,13 +20,12 @@ async def shortner_settings_main(client: Client, query: CallbackQuery):
     # Format short URL for display
     short_url_display = f"`{client.short_url}`" if client.short_url else "𝖭𝗈𝗍 𝖲𝖾𝗍"
     
-    msg = f"""**🔗 𝖲𝗁𝗈𝗋𝗍𝖾𝗇𝖾𝗋 𝖢𝗈𝗇𝖿𝗂𝗀𝗎𝗋𝖺𝗍𝗂𝗈𝗇**
+    msg = f"""**𝖲𝗁𝗈𝗋𝗍𝖾𝗇𝖾𝗋 𝖢𝗈𝗇𝖿𝗂𝗀𝗎𝗋𝖺𝗍𝗂𝗈𝗇**
 
 **✓ 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖴𝖱𝖫:** {short_url_display}
 **✓ 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖠𝖯𝖨 𝖪𝖾𝗒:** `{api_key_display}`
 
-**𝖬𝖺𝗇𝖺𝗀𝖾 𝗒𝗈𝗎𝗋 𝖴𝖱𝖫 𝗌𝗁𝗈𝗋𝗍𝖾𝗇𝖾𝗋 𝗌𝖾𝗍𝗍𝗂𝗇𝗀𝗌.**
-**𝖢𝗁𝖺𝗇𝗀𝖾𝗌 𝖺𝗋𝖾 𝖺𝗉𝗉𝗅𝗂𝖾𝖽 𝗂𝗇𝗌𝗍𝖺𝗇𝗍𝗅𝗒 𝖺𝗇𝖽 𝖺𝗎𝗍𝗈𝗆𝖺𝗍𝗂𝖼𝖺𝗅𝗅𝗒 𝗌𝖺𝗏𝖾𝖽.**"""
+**𝖬𝗈𝖽𝗂𝖿𝗒 𝗂𝗍 𝖺𝗌 𝗒𝗈𝗎 𝗇𝖾𝖾𝖽**"""
     
     reply_markup = InlineKeyboardMarkup([
         [
