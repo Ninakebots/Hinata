@@ -24,7 +24,6 @@ async def shortner_settings_main(client: Client, query: CallbackQuery):
 
 **✓ 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖴𝖱𝖫:** {short_url_display}
 **✓ 𝖢𝗎𝗋𝗋𝖾𝗇𝗍 𝖠𝖯𝖨 𝖪𝖾𝗒:** `{api_key_display}`
-
 **𝖬𝗈𝖽𝗂𝖿𝗒 𝗂𝗍 𝖺𝗌 𝗒𝗈𝗎 𝗇𝖾𝖾𝖽**"""
     
     reply_markup = InlineKeyboardMarkup([
