@@ -489,3 +489,4 @@ async def handle_plan_selection(client: Bot, callback_query):
 async def handle_cancel_operation(client: Bot, callback_query):
     await callback_query.message.delete()
 
+
