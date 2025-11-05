@@ -99,7 +99,7 @@ async def start_command(client: Client, message: Message):
             
     else:
         buttons = [
-            [InlineKeyboardButton("𝖧𝖾𝗅𝗉", callback_data="about"), InlineKeyboardButton("𝖢𝗅𝗈𝗌𝖾", callback_data='close')]
+            [InlineKeyboardButton("𝖠𝖻𝗈𝗎𝗍", callback_data="about"), InlineKeyboardButton("𝖢𝗅𝗈𝗌𝖾", callback_data='close')]
         ]
         if user_id in client.admins:
             buttons.insert(0, [InlineKeyboardButton("𝖲𝖾𝗍𝗍𝗂𝗇𝗀𝗌", callback_data="settings")])
