@@ -186,7 +186,7 @@ async def my_plan(client: Client, message: Message):
         return await message.reply("𝖢𝗈𝗎𝗅𝖽 𝗇𝗈𝗍 𝖿𝖾𝗍𝖼𝗁 𝗉𝗋𝗈𝖿𝗂𝗅𝖾 𝖽𝗎𝖾 𝗍𝗈 𝖺 𝖽𝖺𝗍𝖺𝖻𝖺𝗌𝖾 𝖾𝗋𝗋𝗈𝗋.")
     
     if user_state.get('is_paid', False):
-        paid_data = await client.mongodb.get_paid_user(user_id)
+        paid_data = await client.mongodb.get_paid_users(user_id)
         expires_at = paid_data.get('expires_at') if paid_data else None
         
         if expires_at and isinstance(expires_at, datetime):
