@@ -40,7 +40,7 @@ async def start_command(client: Client, message: Message):
             await client.mongodb.increment_verify_count()
             
             file_payload = verify_status.get('file_payload')
-            buttons = [[InlineKeyboardButton("✖️ 𝖢𝗅𝗈𝗌𝖾", callback_data="close")]]
+            buttons = [[InlineKeyboardButton("𝖢𝗅𝗈𝗌𝖾", callback_data="close")]]
             if file_payload:
                 buttons.insert(0, [InlineKeyboardButton("✅ 𝖦𝖾𝗍 𝖸𝗈𝗎𝗋 𝖥𝗂𝗅𝖾𝗌", callback_data=f"get_file_{file_payload}")])
 
@@ -51,7 +51,7 @@ async def start_command(client: Client, message: Message):
 
         base64_string = payload
         
-        if user_id in client.admins or user_state.get('is_pro', False):
+        if user_id in client.admins or user_state.get('is_paid', False):
             return await send_files(client, user_id, base64_string)
 
         verify_status = await client.mongodb.get_verify_status(user_id)
@@ -153,7 +153,7 @@ async def request_command(client: Client, message: Message):
         return await message.reply_text("**𝖠𝖽𝗆𝗂𝗇𝗌 𝖼𝖺𝗇𝗇𝗈𝗍 𝗆𝖺𝗄𝖾 𝗋𝖾𝗊𝗎𝖾𝗌𝗍𝗌.**")
     
     user_state = await get_user_state_with_cache(client, user_id)
-    if user_state is None or not user_state.get('is_pro', False): 
+    if user_state is None or not user_state.get('is_paid', False): 
         return await message.reply(
             "**𝖮𝗇𝗅𝗒 𝗉𝗋𝖾𝗆𝗂𝗎𝗆 𝗎𝗌𝖾𝗋𝗌 𝖼𝖺𝗇 𝗆𝖺𝗄𝖾 𝗋𝖾𝗊𝗎𝖾𝗌𝗍𝗌.**", 
             reply_markup=InlineKeyboardMarkup([
@@ -186,8 +186,8 @@ async def my_plan(client: Client, message: Message):
     if user_state is None: 
         return await message.reply("**𝖢𝗈𝗎𝗅𝖽 𝗇𝗈𝗍 𝖿𝖾𝗍𝖼𝗁 𝗉𝗋𝗈𝖿𝗂𝗅𝖾 𝖽𝗎𝖾 𝗍𝗈 𝖺 𝖽𝖺𝗍𝖺𝖻𝖺𝗌𝖾 𝖾𝗋𝗋𝗈𝗋.**")
     
-    if user_state.get('is_pro', False):
-        pro_data = await client.mongodb.get_pro_user(user_id)
+    if user_state.get('is_paid', False):
+        pro_data = await client.mongodb.get_paid_users(user_id)
         expires_at = pro_data.get('expires_at') if pro_data else None
         
         if expires_at and isinstance(expires_at, datetime):
